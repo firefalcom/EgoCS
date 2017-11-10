@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 
 public abstract class EgoSystem
 {
 #if UNITY_EDITOR
     public bool enabled = true;
 #endif
+
+    private HashSet<string> _tags;
 
     public EgoSystem() { }
 
@@ -13,6 +16,19 @@ public abstract class EgoSystem
     public virtual void Start() { }
     public virtual void Update() { }
     public virtual void FixedUpdate() { }
+
+    public bool HasTag( string tag )
+    {
+        return _tags.Contains( tag );
+    }
+
+    public void AddTags( params string[] tags )
+    {
+        foreach( var tag in tags )
+        {
+            _tags.Add( tag );
+        }
+    }
 }
 
 public class EgoSystem<EC> : EgoSystem

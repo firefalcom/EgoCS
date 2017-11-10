@@ -7,9 +7,21 @@ public static class EgoSystems
     static EgoSystem[] _systems = new EgoSystem[]{};
     public static EgoSystem[] systems { get { return _systems; } }
 
+    static string _currentTag;
+
     public static void Add( params EgoSystem[] systems )
     {
         _systems = systems;
+    }
+
+    public static void SetTag( string tag )
+    {
+        _currentTag = tag;
+    }
+
+    public static void clearTag()
+    {
+        _currentTag = null;
     }
 
     public static void Start()
@@ -73,14 +85,38 @@ public static class EgoSystems
 
     public static void Update()
     {
-        // Update all Systems
-        foreach( var system in _systems )
+        if ( _currentTag == null )
         {
-#if UNITY_EDITOR
-            if ( system.enabled ) system.Update();
-#else
-            system.Update();
-#endif
+            // Update all Systems
+            foreach ( var system in _systems )
+            {
+                #if UNITY_EDITOR
+                if ( system.enabled )
+                {
+                    system.Update ();
+                }
+                #else
+                    system.Update();
+                #endif
+            }
+        }
+        else
+        {
+            // Update all active Systems
+            foreach ( var system in _systems )
+            {
+                #if UNITY_EDITOR
+                if ( system.enabled && system.HasTag( _currentTag ) )
+                {
+                    system.Update ();
+                }
+                #else
+                if( system.HasTag( _currentTag ) )
+                {
+                    system.Update();
+                }
+                #endif
+            }
         }
 
         // Invoke all queued Events
